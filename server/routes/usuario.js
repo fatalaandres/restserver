@@ -3,8 +3,13 @@ const app = express()
 const bcrypt = require('bcrypt')
 const _ = require('underscore')
 const Usuario = require('../models/usuario')
+const { verificaToken, verificaRol } = require('../middlewares/auth')
 
-app.get('/usuarios', function (req, res) {
+app.get('/usuarios', verificaToken,(req, res) => {
+
+    // return res.json({
+    //     usuario : req.usuario
+    // })
 
     let desde = req.query.desde || 0
     desde = Number(desde)
@@ -35,7 +40,7 @@ app.get('/usuarios', function (req, res) {
         })
 })
   
-app.post('/usuario', function (req, res) {
+app.post('/usuario', [verificaToken, verificaRol], (req, res) => {
       
     body = req.body
 
@@ -62,7 +67,7 @@ app.post('/usuario', function (req, res) {
       
 })
   
-app.put('/usuario/:id', function (req, res) {
+app.put('/usuario/:id', [verificaToken, verificaRol], (req, res) => {
     let id = req.params.id
 
     let camposValidos = [
@@ -90,7 +95,7 @@ app.put('/usuario/:id', function (req, res) {
     })
 })
   
-app.delete('/usuario/:id', function (req, res) {
+app.delete('/usuario/:id', [verificaToken, verificaRol], (req, res) => {
     
     let id = req.params.id
 

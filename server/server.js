@@ -18,7 +18,8 @@ app.get('/', function (req, res) {
     res.json('Hello World')
 })
 
-app.use(require('./routes/usuario'))
+// ROUTES
+app.use(require('./routes/index'))
 
 mongoose.connect(process.env.URLDB, {
   useNewUrlParser: true,
