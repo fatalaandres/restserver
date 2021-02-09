@@ -5,6 +5,9 @@ const _ = require('underscore')
 const Usuario = require('../models/usuario')
 const { verificaToken, verificaRol } = require('../middlewares/auth')
 
+
+// GET USUARIOS
+
 app.get('/usuarios', verificaToken,(req, res) => {
 
     // return res.json({
@@ -39,6 +42,8 @@ app.get('/usuarios', verificaToken,(req, res) => {
             })
         })
 })
+
+// POST USUARIO
   
 app.post('/usuario', [verificaToken, verificaRol], (req, res) => {
       
@@ -66,6 +71,8 @@ app.post('/usuario', [verificaToken, verificaRol], (req, res) => {
     })
       
 })
+
+// PUT USUARIO
   
 app.put('/usuario/:id', [verificaToken, verificaRol], (req, res) => {
     let id = req.params.id
@@ -94,7 +101,9 @@ app.put('/usuario/:id', [verificaToken, verificaRol], (req, res) => {
         })
     })
 })
-  
+
+// DELETE USUARIO
+
 app.delete('/usuario/:id', [verificaToken, verificaRol], (req, res) => {
     
     let id = req.params.id
