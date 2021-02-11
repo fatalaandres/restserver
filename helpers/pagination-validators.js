@@ -1,0 +1,30 @@
+const User = require('../models/User')
+
+// VALIDATE PAGINATION DATA
+
+const valUsersPage = async(pageSize,page)=>{
+
+    page = Number(page)
+    
+    const PAGE_SIZE = pageSize
+    
+    const TOTAL_DOCS= await User.countDocuments({state:true})
+    let totalPages = Math.ceil(TOTAL_DOCS / PAGE_SIZE)
+    
+    if(page > totalPages){
+        page = totalPages
+    }else{
+        if(page < 0){
+            page = 1
+        }
+    }
+
+    return {
+        page,
+        totalPages
+    };
+}
+
+module.exports = {
+    valUsersPage
+}
