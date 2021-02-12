@@ -16,9 +16,15 @@ const isRoleValid = async(role) => {
 
 // VALIDATE UNIQUE EMAIL
 const emailExist = async (email) => {
-    const exist = await User.findOne({email})
-    if(exist){
-        throw new Error(`El email ${email} se encuentra registrado`)
+    try {
+        const exist = await User.findOne({email})
+        if(exist){
+            throw new Error(`El email ${email} se encuentra registrado`)
+        }
+    } catch (error) {
+        res.status(500).json({
+            error
+        })
     }
 }
 

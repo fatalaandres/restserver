@@ -104,6 +104,15 @@ const usersPut = async (req, res = response) => {
 const usersDelete = async (req, res = response) => {
 
     const id = req.params.id
+    const userLogged = req.userLogged
+
+    if(id == userLogged._id){
+        return res.status(400).json({
+            err:{
+                message: "No puede eliminarse a sí mismo"
+            }
+        })
+    }
 
     const stateChange = {
         state: false
@@ -113,7 +122,10 @@ const usersDelete = async (req, res = response) => {
 
     res.json({
         message: 'Usuario eliminado con éxito',
-        user
+        user,
+        adminUser:{
+            name: userLogged.email
+        }
     })
 }
 
