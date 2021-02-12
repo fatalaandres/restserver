@@ -5,64 +5,68 @@ const { valUsersPage } = require('../helpers/pagination-validators')
 
 const usersGet = async (req = request, res = response) => {
 
-    // PAGE SIZE
-    const PAGE_SIZE = 5
+    try {
+        // PAGE SIZE
+        const PAGE_SIZE = 5
 
-    // PAGE VALUE
-    let page = req.query.page || 1
-    page = Number(page)
+        // PAGE VALUE
+        let page = req.query.page || 1
+        page = Number(page)
 
-    let totalPages
+        let totalPages
 
-    // TOTAL DOCS
-    let total = await User.countDocuments({state:true})
-    
-    // PAGINATION CORRECT BETWEEN MIN AND MAX
-    let pagination = await valUsersPage(PAGE_SIZE, total, page)
-    page = pagination.page
-    totalPages = pagination.totalPages
-    
-    let skip = (page - 1) * PAGE_SIZE
-    skip = Number(skip)
+        // TOTAL DOCS
+        let total = await User.countDocuments({state:true})
+        
+        // PAGINATION CORRECT BETWEEN MIN AND MAX
+        let pagination = await valUsersPage(PAGE_SIZE, total, page)
+        page = pagination.page
+        totalPages = pagination.totalPages
+        
+        let skip = (page - 1) * PAGE_SIZE
+        skip = Number(skip)
 
-    let limit = PAGE_SIZE
-    limit = Number(limit)
+        let limit = PAGE_SIZE
+        limit = Number(limit)
 
-    // REGULAR
+        // REGULAR
 
-    const users = await User.find({state:true})
-                            .skip(skip)
-                            .limit(limit)
+        const users = await User.find({state:true})
+                                .skip(skip)
+                                .limit(limit)
 
-    // const total = await User.countDocuments({state:true})
-    
-    // res.json({
-    //     total,
-    //     users
-    // })
+        // const total = await User.countDocuments({state:true})
+        
+        // res.json({
+        //     total,
+        //     users
+        // })
 
-    // PROMISE ALL
-    
-    // const resp = await Promise.all([
-    //     User.countDocuments({state:true}),
-    //     User.find({state:true}).skip(skip).limit(limit)
-    // ])
+        // PROMISE ALL
+        
+        // const resp = await Promise.all([
+        //     User.countDocuments({state:true}),
+        //     User.find({state:true}).skip(skip).limit(limit)
+        // ])
 
-    // res.json({
-    //     resp
-    // })
+        // res.json({
+        //     resp
+        // })
 
-    // const [total, users] = await Promise.all([
-    //     User.countDocuments({state:true}),
-    //     User.find({state:true}).skip(skip).limit(limit)
-    // ])
+        // const [total, users] = await Promise.all([
+        //     User.countDocuments({state:true}),
+        //     User.find({state:true}).skip(skip).limit(limit)
+        // ])
 
-    res.json({
-        total,
-        page,
-        totalPages,
-        users
-    })
+        res.json({
+            total,
+            page,
+            totalPages,
+            users
+        })
+    } catch (error) {
+        throw new Error(error);
+    }
 }
 
 const usersPost = async (req, res = response) => {
