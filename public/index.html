@@ -3,9 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prueba Rest Server</title>
+    <title>Google Sign In Demo</title>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="668168938316-o20fel6jd4liicdshkoifg5kn23kqf7b.apps.googleusercontent.com">
 </head>
 <body>
-    <h1>Index</h1>
+
+    <center>
+
+        <div class="g-signin2" data-onsuccess="onSignIn"></div>
+
+        <a href="#" onclick="signOut();">Sign out</a>
+
+    </center>
+
+    <script>
+
+        console.log(window.location.hostname.includes('localhost'));
+
+        var url
+
+        if(window.location.hostname.includes('localhost')){
+            url = 'http://localhost:3000/api/auth/google'
+        }else{
+            url = 'https://restserverandy.herokuapp.com/api/auth/google'
+        }
+
+        function onSignIn(googleUser) {
+            var profile = googleUser.getBasicProfile();
+            console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+            console.log('Name: ' + profile.getName());
+            console.log('Image URL: ' + profile.getImageUrl());
+            console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+
+            var id_token = googleUser.getAuthResponse().id_token;
+            const data = id_token
+            console.log(data);
+
+            // Ejemplo implementando el metodo POST:
+            async function postData(url = '', data = {}) {
+                // Opciones por defecto estan marcadas con un *
+                const response = await fetch(url, {
+                    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data) // body data type must match "Content-Type" header
+                });
+                return response.json(); // parses JSON response into native JavaScript objects
+            }
+
+            postData(url, { id_token })
+            .then(data => {
+                console.log(data); // JSON data parsed by `data.json()` call
+            });
+        }
+    </script>
+
+    <script>
+        function signOut() {
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function () {
+            console.log('User signed out.');
+        });
+        }
+    </script>
+    
+    
 </body>
 </html>

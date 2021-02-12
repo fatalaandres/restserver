@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const { check } = require('express-validator')
 const { valUserFields } = require('../../middlewares/validate-user-fields')
-const { loginUser } = require('../../controllers/auth.controllers')
+const { loginUser, googleSignIn } = require('../../controllers/auth.controllers')
 
 router.post('/', (req,res)=>{
     console.log("Holis");
@@ -13,5 +13,10 @@ router.post('/login',
         check('password', 'El password es obligatorio').notEmpty(),
         valUserFields
         , loginUser)
+
+router.post('/google', 
+        check('id_token', 'El token es obligatorio').notEmpty(),
+        valUserFields
+        , googleSignIn)
 
 module.exports = router

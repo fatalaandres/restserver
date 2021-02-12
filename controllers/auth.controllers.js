@@ -2,6 +2,7 @@ const { response, request } = require('express')
 const User = require('../models/User')
 const bcrypt = require('bcrypt')
 const { generateJWT } = require('../helpers/generate-jwt')
+const { googleVerify } = require('../helpers/google-verify')
 
 const loginUser = async (req, res = response) => {
 
@@ -54,6 +55,58 @@ const loginUser = async (req, res = response) => {
 
 }
 
+const googleSignIn = async (req, res = response) => {
+
+    const { id_token } = req.body
+    
+    try {
+        
+        const { name, email, img, google } = await googleVerify(id_token)
+
+        let user = await User.findOne({email})
+
+        if(!user){
+            const data = {
+                name,
+                email,
+                password: "googlepass",
+                img,
+                google
+            }
+
+            user = new User(data)
+            await user.save()
+
+        }else{
+            if(user && !user.google){
+                res.status(400).json({
+                    err:{
+                       message: "Debe loguearse normalmente" 
+                    }
+                })
+            }
+        }
+        
+        // GENERATE JWT
+        const token = await generateJWT(user._id)
+
+        res.json({
+            user,
+            token
+        })
+        
+
+    } catch (error) {
+        if(error){
+            res.status(400).json({
+                error
+            })
+        }
+    }
+
+}
+
 module.exports = {
-    loginUser
+    loginUser,
+    googleSignIn
 }
