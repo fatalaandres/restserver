@@ -14,7 +14,7 @@ const valUsersPage = async(pageSize,totalDocs,page)=>{
     if(page > totalPages){
         page = totalPages
     }else{
-        if(page < 0){
+        if(page < 1){
             page = 1
         }
     }
