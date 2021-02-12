@@ -13,9 +13,12 @@ const usersGet = async (req = request, res = response) => {
     page = Number(page)
 
     let totalPages
+
+    // TOTAL DOCS
+    let total = await User.countDocuments({state:true})
     
     // PAGINATION CORRECT BETWEEN MIN AND MAX
-    let pagination = await valUsersPage(PAGE_SIZE, page)
+    let pagination = await valUsersPage(PAGE_SIZE, total, page)
     page = pagination.page
     totalPages = pagination.totalPages
     
@@ -27,9 +30,9 @@ const usersGet = async (req = request, res = response) => {
 
     // REGULAR
 
-    // const users = await User.find({state:true})
-    //                         .skip(skip)
-    //                         .limit(limit)
+    const users = await User.find({state:true})
+                            .skip(skip)
+                            .limit(limit)
 
     // const total = await User.countDocuments({state:true})
     
@@ -49,10 +52,10 @@ const usersGet = async (req = request, res = response) => {
     //     resp
     // })
 
-    const [total, users] = await Promise.all([
-        User.countDocuments({state:true}),
-        User.find({state:true}).skip(skip).limit(limit)
-    ])
+    // const [total, users] = await Promise.all([
+    //     User.countDocuments({state:true}),
+    //     User.find({state:true}).skip(skip).limit(limit)
+    // ])
 
     res.json({
         total,
