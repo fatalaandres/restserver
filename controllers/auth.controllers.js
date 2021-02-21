@@ -79,7 +79,7 @@ const googleSignIn = async (req, res = response) => {
 
         }else{
             if(user && !user.google){
-                res.status(400).json({
+                return res.status(400).json({
                     err:{
                        message: "Debe loguearse normalmente" 
                     }
