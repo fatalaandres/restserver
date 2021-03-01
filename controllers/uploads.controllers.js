@@ -4,6 +4,8 @@ const User = require('../models/User')
 const Product = require('../models/Product')
 const path = require('path')
 const fs   = require('fs');
+const cloudinary = require('cloudinary').v2
+cloudinary.config(process.env.CLOUDINARY_URL)
 
 const uploadUserFile = async (req, res = response) => {
 
@@ -119,6 +121,97 @@ const updateImage = async(req, res = response ) => {
 
 }
 
+const updateImageCloudinary = async(req, res = response ) => {
+
+    const { id, collection } = req.params;
+
+    let model
+
+    let validExt
+
+    let type
+
+    const files = req.files
+
+    switch ( collection ) {
+        case 'users':
+            validExt = [
+                'png',
+                'jpeg',
+                'gif',
+                'jpg'
+            ]
+        
+            type="users"
+
+            model = await User.findById({_id:id});
+            if ( !model ) {
+                return res.status(400).json({
+                    message: `No existe un usuario con el id ${ id }`
+                });
+            }
+        
+        break;
+
+        case 'products':
+            validExt = [
+                'png',
+                'jpeg',
+                'gif',
+                'jpg'
+            ]
+        
+            type="products"
+
+            model = await Product.findById({_id:id});
+            if ( !model ) {
+                return res.status(400).json({
+                    message: `No existe un producto con el id ${ id }`
+                });
+            }
+        
+        break;
+    
+        default:
+            return res.status(500).json({ msg: 'Se me olvidó validar esto'});
+    }
+
+
+    // CLEAR PREVIUS IMAGES
+    if ( model.img ) {
+        const cutName = model.img.split('/')
+        const name = cutName[cutName.length-1]
+        const public_id = name.split('.')[0]
+        await cloudinary.uploader.destroy(public_id)
+    }
+    
+    try {
+
+        const { tempFilePath } = files.uploadFile
+
+        // const resp = await cloudinary.uploader.upload(tempFilePath)
+        // console.log(resp)
+        
+        const { secure_url } = await cloudinary.uploader.upload(tempFilePath)
+
+        model.img = secure_url
+    
+        await model.save();
+            
+        res.json({
+            message: 'El archivo se actualizó correctamente',
+            model
+        })
+        
+    } catch (error) {
+        res.status(400).json({
+            error
+        })
+    }
+
+
+}
+
 const getImage = async(req, res = response ) => {
 
     const { id, collection } = req.params;
@@ -189,8 +282,11 @@ const getImage = async(req, res = response ) => {
 
 }
 
+
+
 module.exports = {
     uploadUserFile,
     updateImage,
+    updateImageCloudinary,
     getImage
 }
